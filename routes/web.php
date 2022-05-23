@@ -16,3 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::middleware('guest')->group(function () {
+    Route::view('login', 'auth.login');
+    Route::post('login', [\App\Http\Controllers\LoginController::class, 'login'])->name('login');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+    Route::get('/authors', [App\Http\Controllers\AuthorController::class, 'index'])->name('authors.index');
+});
