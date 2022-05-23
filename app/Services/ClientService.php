@@ -26,10 +26,7 @@ class ClientService
 
     public function fetchAuthors(int $page = 1, int $perPage = 12): Collection
     {
-        $response = Http::qClient()->withHeaders([
-            'Authorization' => 'Bearer '.auth()->user()->access_token,
-            'Content-Type'  => 'application/json',
-        ])->get('/api/v2/authors', [
+        $response = Http::qClientWithToken()->get('/api/v2/authors', [
             'limit' => $perPage,
             'page' => $page,
         ]);
@@ -39,6 +36,39 @@ class ClientService
         });
 
         return $response->collect();
+    }
+
+    public function fetchAuthor(int $id): array
+    {
+        $response = Http::qClientWithToken()->get('/api/v2/authors/'.$id);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->json();
+    }
+
+    public function deleteAuthor(int $id): bool
+    {
+        $response = Http::qClientWithToken()->delete('/api/v2/authors/'.$id);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->ok();
+    }
+
+    public function deleteBook(int $id): bool
+    {
+        $response = Http::qClientWithToken()->delete('/api/v2/books/'.$id);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->ok();
     }
 
     protected function fetchAccessToken(?string $email, ?string $password): AccessToken

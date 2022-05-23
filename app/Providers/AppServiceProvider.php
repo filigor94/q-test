@@ -34,6 +34,13 @@ class AppServiceProvider extends ServiceProvider
             return Http::baseUrl('https://symfony-skeleton.q-tests.com');
         });
 
+        Http::macro('qClientWithToken', function () {
+            return Http::qClient()->withHeaders([
+                'Authorization' => 'Bearer '.auth()->user()->access_token,
+                'Content-Type'  => 'application/json',
+            ]);
+        });
+
         Auth::provider('client', function ($app, array $config) {
             return app(ClientUserProvider::class);
         });

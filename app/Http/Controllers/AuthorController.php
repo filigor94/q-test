@@ -38,4 +38,25 @@ class AuthorController extends Controller
             'authors' => $authors,
         ]);
     }
+
+    public function show(int $author)
+    {
+        $author = $this->clientService->fetchAuthor($author);
+
+        return view('authors.show', [
+            'author' => $author,
+        ]);
+    }
+
+    public function destroy(int $author)
+    {
+        $author = $this->clientService->fetchAuthor($author);
+        if (count($author['books'])) {
+            return back();
+        }
+
+        $this->clientService->deleteAuthor($author['id']);
+
+        return to_route('authors.index');
+    }
 }
