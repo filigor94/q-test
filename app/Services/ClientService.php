@@ -8,6 +8,7 @@ use App\Dto\AccessTokenDto;
 use App\Dto\LoginResultDto;
 use App\Tools\AccessToken;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class ClientService
@@ -21,6 +22,23 @@ class ClientService
         }
 
         return new LoginResultDto(true, $accessToken);
+    }
+
+    public function fetchAuthors(int $page = 1, int $perPage = 12): Collection
+    {
+        $response = Http::qClient()->withHeaders([
+            'Authorization' => 'Bearer '.auth()->user()->access_token,
+            'Content-Type'  => 'application/json',
+        ])->get('/api/v2/authors', [
+            'limit' => $perPage,
+            'page' => $page,
+        ]);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->collect();
     }
 
     protected function fetchAccessToken(?string $email, ?string $password): AccessToken
