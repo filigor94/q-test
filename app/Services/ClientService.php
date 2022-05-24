@@ -71,6 +71,30 @@ class ClientService
         return $response->ok();
     }
 
+    public function createAuthor(
+        string $firstName,
+        string $lastName,
+        string $birthDay,
+        string $placeOfBirth,
+        string $biography = null,
+        string $gender = null
+    ): array {
+        $response = Http::qClientWithToken()->post('/api/v2/authors', [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'birthday' => $birthDay,
+            'biography' => $biography,
+            'gender' => $gender,
+            'place_of_birth' => $placeOfBirth,
+        ]);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->json();
+    }
+
     protected function fetchAccessToken(?string $email, ?string $password): AccessToken
     {
         if (is_null($email) || is_null($password)) {
