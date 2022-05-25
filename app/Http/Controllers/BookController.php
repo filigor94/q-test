@@ -18,13 +18,13 @@ class BookController extends Controller
     public function store(StoreBookRequest $request)
     {
         $response = $this->clientService->createBook(
-            $request->author_id,
+            (int) $request->author_id,
             $request->title,
             $request->isbn,
-            $request->release_date ? Carbon::parse($request->release_date)->format('Y-m-d H:i:s') : null,
             $request->description,
+            $request->release_date ? Carbon::parse($request->release_date)->format('Y-m-d H:i:s') : null,
             $request->input('format'),
-            $request->number_of_pages,
+            $request->number_of_pages ? (int) $request->number_of_pages : null,
         );
 
         if ($response->ok()) {

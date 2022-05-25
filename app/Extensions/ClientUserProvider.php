@@ -80,6 +80,7 @@ class ClientUserProvider implements UserProvider
         }
 
         $payload['id'] = json_encode($payload);
+        $payload['remember_token'] = '';
 
         return new GenericUser($payload);
     }

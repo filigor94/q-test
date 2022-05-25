@@ -13,7 +13,7 @@
                     </tr>
                     <tr>
                         <th>Biography</th>
-                        <td>{{ $author['biography'] }}</td>
+                        <td>{{ $author['biography'] ?? null }}</td>
                     </tr>
                     <tr>
                         <th>Gender</th>
@@ -52,7 +52,7 @@
                     @foreach($author['books'] as $book)
                         <tr>
                             <td>{{ $book['title'] }}</td>
-                            <td>{{ \Carbon\Carbon::parse($book['release_date'])->format('d.m.Y.') }}</td>
+                            <td>{{ isset($book['release_date']) ? \Carbon\Carbon::parse($book['release_date'])->format('d.m.Y.') : null }}</td>
                             <td>{{ $book['description'] }}</td>
                             <td>{{ $book['isbn'] }}</td>
                             <td>{{ $book['format'] }}</td>

@@ -48,8 +48,8 @@ class AddNewAuthor extends Command
             $this->option('last-name'),
             $this->option('birthday'),
             $this->option('place-of-birth'),
-            $this->option('biography'),
             $this->option('gender'),
+            $this->option('biography'),
         );
 
         auth()->logout();
@@ -71,6 +71,7 @@ class AddNewAuthor extends Command
             'first_name' => $this->option('first-name'),
             'last_name' => $this->option('last-name'),
             'birthday' => $this->option('birthday'),
+            'gender' => $this->option('gender'),
             'place_of_birth' => $this->option('place-of-birth'),
         ])->filter(fn($option) => is_null($option));
 
@@ -79,6 +80,10 @@ class AddNewAuthor extends Command
                 'The following options are required: '
                 .implode(', ', $requiredOptions->keys()->toArray())
             );
+        }
+
+        if (!in_array($this->option('gender'), ['male', 'female'])) {
+            throw new \Exception('Gender should be "male" or "female"');
         }
     }
 }

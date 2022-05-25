@@ -29,7 +29,7 @@ class StoreBookRequest extends FormRequest
             'author_id' => 'required|integer',
             'title' => 'required|string|min:1|max:255',
             'release_date' => 'nullable|string',
-            'description' => 'nullable|string|min:1|max:255',
+            'description' => 'string|min:1|max:255',
             'isbn' => 'required|string',
             'format' => 'nullable|string',
             'number_of_pages' => 'nullable|integer',

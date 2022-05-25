@@ -48,41 +48,45 @@ class ClientService
         string $lastName,
         string $birthDay,
         string $placeOfBirth,
-        string $biography = null,
-        string $gender = null
+        string $gender,
+        string $biography = null
     ): Response {
-        $response = Http::qClientWithToken()->post('/api/v2/authors', [
+        $data = array_filter([
             'first_name' => $firstName,
             'last_name' => $lastName,
             'birthday' => $birthDay,
-            'biography' => $biography,
             'gender' => $gender,
             'place_of_birth' => $placeOfBirth,
+            'biography' => $biography,
         ]);
+
+        $response = Http::qClientWithToken()->post('/api/v2/authors', $data);
 
         return $this->getValidatedResponse($response);
     }
 
     public function createBook(
-        string $authorId,
+        int $authorId,
         string $title,
         string $isbn,
+        string $description,
         ?string $releaseDate = null,
-        ?string $description = null,
         ?string $format = null,
-        ?string $numberOfPages = null,
+        ?int $numberOfPages = null,
     ): Response {
-        $response = Http::qClientWithToken()->post('/api/v2/books', [
+        $data = array_filter([
             'author' => [
                 'id' => $authorId,
             ],
             'title' => $title,
-            'release_date' => $releaseDate,
-            'description' => $description,
             'isbn' => $isbn,
+            'description' => $description,
+            'release_date' => $releaseDate,
             'format' => $format,
             'number_of_pages' => $numberOfPages,
         ]);
+
+        $response = Http::qClientWithToken()->post('/api/v2/books', $data);
 
         return $this->getValidatedResponse($response);
     }

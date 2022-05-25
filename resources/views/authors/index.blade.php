@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <table class="table table-responsive">
+        <table class="table table-responsive text-center">
             <tr>
                 <th>First name</th>
                 <th>Last name</th>
@@ -33,8 +33,10 @@
 
         @if($authors->hasMorePages() || $authors->total() > 12)
             @if($authors->count())
-                <div class="card-block">
-                    {!! $authors->links() !!}
+                <div class="d-flex">
+                    <div class="mx-auto">
+                        {!! $authors->links() !!}
+                    </div>
                 </div>
             @endif
         @endif
