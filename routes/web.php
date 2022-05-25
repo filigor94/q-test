@@ -20,6 +20,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::view('profile', 'profile.index')->name('profile.index');
     Route::post('/logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 
     Route::get('/authors', [App\Http\Controllers\AuthorController::class, 'index'])->name('authors.index');

@@ -21,7 +21,7 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt($request->only(['email', 'password']))) {
-            return to_route('authors.index');
+            return to_route('profile.index');
         }
 
         return back()->withErrors(['message' => 'Invalid credentials']);

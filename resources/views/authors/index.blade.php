@@ -23,8 +23,8 @@
                         <form action="{{ route('authors.destroy', ['author' => $author['id']]) }}" method="post">
                             @csrf
                             @method('delete')
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                             <a href="{{ route('authors.show', ['author' => $author['id']]) }}" class="btn btn-outline-info btn-sm">View</a>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                         </form>
                     </td>
                 </tr>
