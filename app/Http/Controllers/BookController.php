@@ -17,7 +17,7 @@ class BookController extends Controller
 
     public function store(StoreBookRequest $request)
     {
-        $this->clientService->createBook(
+        $response = $this->clientService->createBook(
             $request->author_id,
             $request->title,
             $request->isbn,
@@ -27,12 +27,18 @@ class BookController extends Controller
             $request->number_of_pages,
         );
 
+        if ($response->ok()) {
+            session()->flash('message', ['status' => 'success', 'text' => 'New book has been successfully created']);
+        }
+
         return to_route('books.create');
     }
 
     public function destroy(int $book)
     {
-        $this->clientService->deleteBook($book);
+        if ($this->clientService->deleteBook($book)->successful()) {
+            session()->flash('message', ['status' => 'success', 'text' => 'The book has been successfully deleted']);
+        }
 
         return back();
     }

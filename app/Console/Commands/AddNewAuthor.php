@@ -43,7 +43,7 @@ class AddNewAuthor extends Command
             throw new \Exception('Invalid Credentials');
         }
 
-        $this->clientService->createAuthor(
+        $response = $this->clientService->createAuthor(
             $this->option('first-name'),
             $this->option('last-name'),
             $this->option('birthday'),
@@ -53,6 +53,12 @@ class AddNewAuthor extends Command
         );
 
         auth()->logout();
+
+        if (!$response->ok()) {
+            return 1;
+        }
+
+        $this->info('New author has been successfully created');
 
         return 0;
     }

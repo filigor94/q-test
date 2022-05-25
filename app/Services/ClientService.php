@@ -8,7 +8,6 @@ use App\Dto\AccessTokenDto;
 use App\Dto\LoginResultDto;
 use App\Tools\AccessToken;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
 class ClientService
@@ -24,7 +23,7 @@ class ClientService
         return new LoginResultDto(true, $accessToken);
     }
 
-    public function fetchAuthors(int $page = 1, int $perPage = 12, ?string $search = null): Collection
+    public function fetchAuthors(int $page = 1, int $perPage = 12, ?string $search = null): Response
     {
         $response = Http::qClientWithToken()->get('/api/v2/authors', [
             'limit' => $perPage,
@@ -32,44 +31,28 @@ class ClientService
             'query' => $search,
         ]);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->collect();
+        return $this->getValidatedResponse($response);
     }
 
-    public function fetchAuthor(int $id): array
+    public function fetchAuthor(int $id): Response
     {
         $response = Http::qClientWithToken()->get('/api/v2/authors/'.$id);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->json();
+        return $this->getValidatedResponse($response);
     }
 
-    public function deleteAuthor(int $id): bool
+    public function deleteAuthor(int $id): Response
     {
         $response = Http::qClientWithToken()->delete('/api/v2/authors/'.$id);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->ok();
+        return $this->getValidatedResponse($response);
     }
 
-    public function deleteBook(int $id): bool
+    public function deleteBook(int $id): Response
     {
         $response = Http::qClientWithToken()->delete('/api/v2/books/'.$id);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->ok();
+        return $this->getValidatedResponse($response);
     }
 
     public function createAuthor(
@@ -79,7 +62,7 @@ class ClientService
         string $placeOfBirth,
         string $biography = null,
         string $gender = null
-    ): array {
+    ): Response {
         $response = Http::qClientWithToken()->post('/api/v2/authors', [
             'first_name' => $firstName,
             'last_name' => $lastName,
@@ -89,11 +72,7 @@ class ClientService
             'place_of_birth' => $placeOfBirth,
         ]);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->json();
+        return $this->getValidatedResponse($response);
     }
 
     public function createBook(
@@ -104,7 +83,7 @@ class ClientService
         ?string $description = null,
         ?string $format = null,
         ?string $numberOfPages = null,
-    ): array {
+    ): Response {
         $response = Http::qClientWithToken()->post('/api/v2/books', [
             'author' => [
                 'id' => $authorId,
@@ -117,11 +96,7 @@ class ClientService
             'number_of_pages' => $numberOfPages,
         ]);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $response->json();
+        return $this->getValidatedResponse($response);
     }
 
     protected function fetchAccessToken(?string $email, ?string $password): AccessToken
@@ -135,11 +110,9 @@ class ClientService
             'password' => $password,
         ]);
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $this->createAccessToken($response->json());
+        return $this->createAccessToken(
+            $this->getValidatedResponse($response)->json()
+        );
     }
 
     protected function getAccessToken(string $email = null, string $password = null): AccessToken
@@ -174,11 +147,9 @@ class ClientService
     {
         $response = Http::qClient()->get(config('client.url_refresh_token').'/'.$accessToken->getRefreshToken());
 
-        $response->onError(function (Response $response) {
-            $response->throw();
-        });
-
-        return $this->createAccessToken($response->json());
+        return $this->createAccessToken(
+            $this->getValidatedResponse($response)->json()
+        );
     }
 
     private function createAccessToken(array $response): AccessToken
@@ -197,5 +168,14 @@ class ClientService
                 ]
             )
         );
+    }
+
+    private function getValidatedResponse(Response $response): Response
+    {
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response;
     }
 }

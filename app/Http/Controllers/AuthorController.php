@@ -24,7 +24,7 @@ class AuthorController extends Controller
     {
         $page = Paginator::resolveCurrentPage() ? : 1;
         $perPage = $request->perPage ? (int) $request->perPage : 12;
-        $response = $this->clientService->fetchAuthors($page, $perPage, $request->search);
+        $response = $this->clientService->fetchAuthors($page, $perPage, $request->search)->collect();
 
         $authors = new LengthAwarePaginator(
             collect($response['items']),
@@ -58,7 +58,7 @@ class AuthorController extends Controller
 
     public function show(int $author)
     {
-        $author = $this->clientService->fetchAuthor($author);
+        $author = $this->clientService->fetchAuthor($author)->json();
 
         return view('authors.show', [
             'author' => $author,
@@ -67,12 +67,16 @@ class AuthorController extends Controller
 
     public function destroy(int $author)
     {
-        $author = $this->clientService->fetchAuthor($author);
+        $author = $this->clientService->fetchAuthor($author)->json();
         if (count($author['books'])) {
+            session()->flash('message', ['status' => 'danger', 'text' => 'The author has related books']);
+
             return back();
         }
 
-        $this->clientService->deleteAuthor($author['id']);
+        if ($this->clientService->deleteAuthor($author['id'])->successful()) {
+            session()->flash('message', ['status' => 'success', 'text' => 'The author has been successfully deleted']);
+        }
 
         return to_route('authors.index');
     }
