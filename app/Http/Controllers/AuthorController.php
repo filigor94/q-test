@@ -24,7 +24,7 @@ class AuthorController extends Controller
     {
         $page = Paginator::resolveCurrentPage() ? : 1;
         $perPage = $request->perPage ? (int) $request->perPage : 12;
-        $response = $this->clientService->fetchAuthors($page, $perPage);
+        $response = $this->clientService->fetchAuthors($page, $perPage, $request->search);
 
         $authors = new LengthAwarePaginator(
             collect($response['items']),
@@ -33,6 +33,23 @@ class AuthorController extends Controller
             $page,
             ['path' => route('authors.index')]
         );
+
+        if ($request->ajax()) {
+            $result = [];
+            foreach ($response['items'] as $author) {
+                $result[] = [
+                    'id' => $author['id'],
+                    'text' => $author['first_name'].' '.$author['last_name'],
+                ];
+            }
+
+            return [
+                'results' => $result,
+                'pagination' => [
+                    'more' => $page != $authors->lastPage(),
+                ]
+            ];
+        }
 
         return view('authors.index', [
             'authors' => $authors,

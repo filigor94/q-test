@@ -24,11 +24,12 @@ class ClientService
         return new LoginResultDto(true, $accessToken);
     }
 
-    public function fetchAuthors(int $page = 1, int $perPage = 12): Collection
+    public function fetchAuthors(int $page = 1, int $perPage = 12, ?string $search = null): Collection
     {
         $response = Http::qClientWithToken()->get('/api/v2/authors', [
             'limit' => $perPage,
             'page' => $page,
+            'query' => $search,
         ]);
 
         $response->onError(function (Response $response) {
@@ -86,6 +87,34 @@ class ClientService
             'biography' => $biography,
             'gender' => $gender,
             'place_of_birth' => $placeOfBirth,
+        ]);
+
+        $response->onError(function (Response $response) {
+            $response->throw();
+        });
+
+        return $response->json();
+    }
+
+    public function createBook(
+        string $authorId,
+        string $title,
+        string $isbn,
+        ?string $releaseDate = null,
+        ?string $description = null,
+        ?string $format = null,
+        ?string $numberOfPages = null,
+    ): array {
+        $response = Http::qClientWithToken()->post('/api/v2/books', [
+            'author' => [
+                'id' => $authorId,
+            ],
+            'title' => $title,
+            'release_date' => $releaseDate,
+            'description' => $description,
+            'isbn' => $isbn,
+            'format' => $format,
+            'number_of_pages' => $numberOfPages,
         ]);
 
         $response->onError(function (Response $response) {
