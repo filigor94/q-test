@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Extensions;
 
+use App\Dto\AccessTokenDto;
 use App\Services\ClientService;
+use App\Tools\AccessToken;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
@@ -18,7 +20,33 @@ class ClientUserProvider implements UserProvider
     public function retrieveById($identifier)
     {
         $payload = json_decode($identifier, true);
-        $payload['id'] = $identifier;
+        $accessToken = new AccessToken(
+            new AccessTokenDto(
+                $payload['access_token'],
+                $payload['refresh_token'],
+                $payload['access_token_expires_at'],
+                $payload['refresh_token_expires_at'],
+                $payload['additional_data']
+            )
+        );
+
+        if (!$accessToken->hasExpired()) {
+            $payload['id'] = $identifier;
+            $payload['remember_token'] = '';
+
+            return new GenericUser($payload);
+        }
+
+        if ($accessToken->hasRefreshExpired()) {
+            return null;
+        }
+
+        $payload = $this->clientService->getRefreshToken($accessToken)?->getValues();
+        if (is_null($payload)) {
+            return null;
+        }
+
+        $payload['id'] = json_encode($payload);
         $payload['remember_token'] = '';
 
         return new GenericUser($payload);
@@ -43,13 +71,14 @@ class ClientUserProvider implements UserProvider
             return false;
         }
 
-        $loginResultDto = $this->clientService->login($credentials['email'], $credentials['password']);
+        $payload = $this->clientService
+            ->getAccessToken($credentials['email'], $credentials['password'])
+            ?->getValues();
 
-        if (!$loginResultDto->getSuccess() || is_null($loginResultDto->getAccessToken())) {
+        if (is_null($payload)) {
             return null;
         }
 
-        $payload = $loginResultDto->getAccessToken()->getValues();
         $payload['id'] = json_encode($payload);
 
         return new GenericUser($payload);
