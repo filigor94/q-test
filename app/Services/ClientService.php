@@ -70,9 +70,9 @@ class ClientService
         string $title,
         string $isbn,
         string $description,
+        int $numberOfPages,
+        string $format,
         ?string $releaseDate = null,
-        ?string $format = null,
-        ?int $numberOfPages = null,
     ): Response {
         $data = array_filter([
             'author' => [

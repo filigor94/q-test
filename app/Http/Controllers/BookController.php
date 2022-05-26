@@ -22,9 +22,9 @@ class BookController extends Controller
             $request->title,
             $request->isbn,
             $request->description,
-            $request->release_date ? Carbon::parse($request->release_date)->format('Y-m-d H:i:s') : null,
+            (int) $request->number_of_pages,
             $request->input('format'),
-            $request->number_of_pages ? (int) $request->number_of_pages : null,
+            $request->release_date ? Carbon::parse($request->release_date)->format('Y-m-d H:i:s') : null,
         );
 
         if ($response->ok()) {

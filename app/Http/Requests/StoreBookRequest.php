@@ -31,8 +31,8 @@ class StoreBookRequest extends FormRequest
             'release_date' => 'nullable|string',
             'description' => 'string|min:1|max:255',
             'isbn' => 'required|string',
-            'format' => 'nullable|string',
-            'number_of_pages' => 'nullable|integer',
+            'format' => 'required|string',
+            'number_of_pages' => 'required|integer',
         ];
     }
 }
