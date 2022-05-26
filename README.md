@@ -8,7 +8,7 @@ The project is made in Laravel 9. You need to have PHP >= 8.0 and Composer >= 2.
 
 Clone the repository
 ```
-git clone https://github.com/filigor94/q-test
+git clone https://github.com/filigor94/q-test.git
 ```
 
 Do composer install
