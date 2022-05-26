@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         Http::macro('qClient', function () {
-            return Http::baseUrl('https://symfony-skeleton.q-tests.com');
+            return Http::withoutVerifying()->baseUrl('https://symfony-skeleton.q-tests.com');
         });
 
         Http::macro('qClientWithToken', function () {
